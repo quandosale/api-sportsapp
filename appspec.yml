@@ -1,0 +1,10 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ec2-user/sportsapp/api
+hooks:
+  AfterInstall:
+    - location: scripts/install_dependencies.sh
+      timeout: 3600
+      runas: root
