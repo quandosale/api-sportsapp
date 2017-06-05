@@ -30,13 +30,13 @@ require('./model/identities');
 var app = express();
 
 //View Engine
-app.set('views', path.join(__dirname, 'client/dist'));
+app.set('views', path.join(__dirname, '../client/dist'));
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 
 // Embed File server
 app.use(express.static('public'));
-app.use(express.static(path.join(__dirname, 'client/dist')));
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
 dotenv.load();
 
