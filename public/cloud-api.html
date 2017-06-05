@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cloud API doc</title>
+    <script src="jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+    <script src="api.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+    <link href="api-style.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <nav id="spy">
+                <ul class="sidebar-nav nav">
+                    <li class="sidebar-brand">
+                        <a href="javascript:void(0)"><span class="fa fa-home solo">Cloud API</span></a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" data-scroll id="Authentication">
+                            <span class="fa fa-anchor solo">Authentication</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" data-scroll id="Accounts">
+                            <span class="fa fa-anchor solo">Accounts</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" data-scroll id="Patients">
+                            <span class="fa fa-anchor solo">Patients</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" data-scroll id="Gateways">
+                            <span class="fa fa-anchor solo">Gateways</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" data-scroll id="Devices">
+                            <span class="fa fa-anchor solo">Devices</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" data-scroll id="Journals">
+                            <span class="fa fa-anchor solo">Journals</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" data-scroll id="Datasets">
+                            <span class="fa fa-anchor solo">Datasets</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" data-scroll id="Notifications">
+                            <span class="fa fa-anchor solo">Notifications</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" data-scroll id="Configs">
+                            <span class="fa fa-anchor solo">Configs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" data-scroll id="Lambda">
+                            <span class="fa fa-anchor solo">Lambda function</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Page content -->
+        <div id="page-content-wrapper">
+            <div class="page-content" data-spy="scroll" data-target="#spy">
+                <div class="row Authentication">
+                    <pre>
+    <h1>Authentication</h1>
+
+    <h4>/auth/login/</h4>
+        Method: POST
+        Data:
+            {
+                username: String,
+                password: String,
+            }
+        Response:
+            {
+                success: Boolean,           // true if username/password valid, otherwise false
+                message: String,            // message from server after authentication
+                data: { id: String }        // the ID of the logged in account
+            }
+
+    <h4>/auth/signup/</h4>
+        Method: POST
+        Data:
+            {
+                username: String,
+                password: String,
+                sec_question: String,
+                sec_answer: String,
+                firstname: String,
+                secondname: String,
+                gender: String,
+                birthday: Date,
+                height:Number,
+                weight: Number
+            }
+        Response:
+            {
+                success: Boolean,           // true if success, otherwise false
+                message: String,            // message from server after authentication
+                data: { id: String }        // the ID of the created account
+            }
+    <h4>/auth/forgot-password</h4>
+        Method: POST
+        Data:
+            {
+                username: String,
+                sec_question: String,
+                sec_answer: String
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: null
+            }
+    <h4>/auth/reset-password/:token</h4>
+        Method: POST
+        Data:
+            {
+                password: String
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: null
+            }
+</pre>
+                </div>
+
+                <div class="row Accounts">
+                    <pre>
+    <h1>Account</h1>
+
+    <h4>/accounts/get/</h4>
+        Method: GET
+        Response:
+            {
+                success: true,
+                data: Array                 // Array of the patients linked to the account
+            }
+
+    <h4>/accounts/get/:id  </h4>
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                data: Object
+            }
+    <h4>/accounts/:id/add-network</h4>
+        Method: PUT
+        Data:
+            {
+                id: String
+            }
+        Response:
+            {
+                success: Boolean,
+            }
+    <h4>/accounts/:id/delete-network/:id1</h4>           // Current Account Id
+        Method: DELETE
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: null
+            }
+    <h4>/accounts/update/:id</h4>
+        Method: PUT
+        Data:
+            {
+                username: String
+                password: String
+                firstname: String
+                secondname: String
+                birthday: Date
+                gender: String
+                height: Number
+                weight: Number
+                address1: String
+                address2: String
+                city: String
+                country: String
+                sec_question: String
+                sec_answer: String
+                type: String
+                patients[]: Array
+                config: Object
+                gateways[]: Array
+                photo: String
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String
+            }
+    <h4>/get-subscription/:id</h4>
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                data: Number
+            }
+    <h4>/upgrade-subscription/:id</h4>
+        Method: PUT
+        Data:
+            {
+                level:Number
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String
+            }
+    <h4>/get-alarmsound/:id</h4>
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                data: String
+            }
+    <h4>/upgrade-alarmsound/:id</h4>
+        Method: PUT
+        Data:
+            {
+                alarmSound:String
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String
+            }
+    <h4>/accounts/close/:id</h4>
+        Method: DELETE
+        Response:
+            {
+                success: Boolean,
+                message: String
+            }
+
+
+</pre>
+                </div>
+
+                <div class="row Patients">
+                    <pre>
+    <h1>Patients</h1>
+
+    <h4>/patients/register/</h4>
+        Method: POST
+        Data:
+            {
+                firstname: String,
+                lastname: String,
+                birthday: Date,
+                height: Number,
+                gender: String,
+                location: String,
+                city: String,
+                photo: String,
+                doctor: {
+                    id: ObjectID,
+                    lastname: lastname
+                }              // the ID of the account
+                phone: String
+            }
+        Response:
+            {
+                success: true,
+                message: 'Patient succesfully created...',
+                data: Object                        // Patient Object
+            }
+
+    <h4>/patients/get/</h4>
+        Method: GET
+        Response:
+            {
+                success: true,
+                data: Array                 // Array of the patients linked to the account
+            }
+
+    <h4>/patients/get/:id</h4>                       // Get the specific patient data using patient ID (ex: http://localhost:3001/patients/get/586eff0509c6610758715f38 )
+        Method: GET
+        Response:
+            {
+                success: Boolean            // true if success, otherwise false
+                data: Object {              // null if err
+                    patient: Object,        // Patient data
+                    doctor:  Object         // Doctor data linked to the patient
+                }
+            }
+    <h4>/patients/:id/get-networked-patients</h4>
+        Method: GET
+        Response:
+        {
+            success: Boolean,
+            message: String,
+            data: Array
+        }
+    <h4>/patients/:id/get-networked-shared-patients</h4>
+        Method: GET
+        Response:
+        {
+            success: Boolean,
+            message: String,
+            data: Array
+        }
+    <h4>/patients/:id/get-networked-no-shared-patients</h4>
+        Method: GET
+        Response:
+        {
+            success: Boolean,
+            message: String,
+            data: Array
+        }
+
+    <h4>/patients/get-by-doctor/:id</h4>             // Get the list of patients who are linked to the specific doctor ID
+        Method: GET
+        Response {
+            success: Boolean,               // true if success, otherwise false
+            message: String,                // message after fetching data
+            data: Array                     // list of patients as array
+        }
+
+    <h4>/patients/get-by-gateway/:mac</h4>             // Get the list of patients who are linked to the specific gatewayMAC
+        Method: GET
+        Response {
+            success: Boolean,               // true if success, otherwise false
+            message: String,                // message after fetching data
+            data: Array                     // list of patients as array
+        }
+    <h4>/patients/get-by-doctor-gateway/:id/:mac</h4>
+        Method: GET
+        Response: {
+            success: Boolean,
+            message: String,
+            data: Array
+        }
+    <h4>/patients/update/:id</h4>                    // Update existing patient data
+        Method: PUT
+        Data:
+            {
+                firstname: String,
+                lastname: String,
+                birthday: Date,
+                height: Number,
+                gender: String,
+                location: String,
+                city: String,
+                photo: String,
+                doctor: {
+                    id: ObjectID,
+                    lastname: lastname
+                }              // the ID of the account
+                phone: String
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String
+            }
+
+    <h4>/patients/add-gateway/:mac</h4>          // Add gateway to specific patient
+        Method: PUT
+        Data:
+            {
+                ids: Array,                      // Id array of patients
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String
+            }
+
+    <h4>/patients/delete/:id</h4>
+        Method: DELETE
+        Response:
+            {
+                success: Boolean,
+                message: String,
+            }
+    <h4>/patients/delete-from-gateway/:id/:mac</h4>
+        Method: DELETE
+        Response:
+            {
+                success: Boolean,
+                message: String,
+            }
+</pre>
+                </div>
+                <div class="row Gateways">
+                    <pre>
+    <h1>Gateways</h1>
+
+    <h4>/gateways/register</h4>                  // Request gateway to be registered after authentication with doctor username and password
+        Method: POST
+        Data:
+            {
+                name: String,
+                type: String,
+                mac: String,
+                upload_freq: {
+                    type: Number,
+                    default: 10
+                },
+                polling_freq: Number,
+                login_everytime: Boolean,
+                owner: String
+            }
+        Response:
+            {
+                success: true,
+                message: 'Gateway succesfully registered...'
+            }
+
+    <h4>/gateways/auth</h4>                      // Authentication request with username and password
+        Method: POST
+        Data:
+            {
+                username: String,
+                password: String,
+                mac: mac
+            }
+        Response:
+            {
+                success: Boolean,       //  true, false
+                message: String,        //  'Error', 'No such account', 'Success'
+                data: Object            //  Doctor Object - refer to the doctor data model
+                bLink: Boolean
+            }
+
+    <h4>/gateways/get/:mac/:id</h4>                  // Get gateway information with mac address - can be used when bootstraping the app
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String         //  'Error', 'Not Found', 'Found'
+                devices: Array,
+                patients: Array,
+                gateway: gateway,
+                lastname: String        //  Doctor' lastname
+            }
+    <h4>/gateways/get-by-doctor/:id</h4>                  // Get gateway information with doctor id
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String         //  'Error', 'Not Found', 'Found'
+                data: Object            //  Gateway Object - refer to the gateway array
+            }
+    <h4>/gateways/get-by-doctor/:id/:mac</h4>                  // Get gateway information with doctor id
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String         //  'Error', 'Not Found', 'Found'
+                data: Object            //  Gateway Object - refer to the gateway array
+            }
+    <h4>/gateways/update/:id</h4>
+        Method: PUT
+        Data:
+            {
+                upload_freq: Number,
+                polling_freq: Number,
+                login_everytime: Boolean
+            }
+
+    <h4>/gateways/update/:mac/:id</h4>
+        Method: PUT
+        Data:
+            {
+                upload_freq: Number,
+                polling_freq: Number,
+                login_everytime: Boolean
+            }
+     <h4>/gateways/deactivate</h4>
+        Method: PUT
+        Data:
+            {
+                gatewayId: String,
+                doctorId: String
+            }
+
+         Response:
+            {
+                success: Boolean,
+                message: String
+            }
+</pre>
+                </div>
+
+                <div class="row Devices">
+                    <pre>
+    <h1>Devices</h1>
+
+    <h4>/devices/register</h4>                   // Register new device
+        Method: POST
+        Data:
+            {
+                ownerId: String,
+                gatewayMac: String,
+                devices: [
+                {
+                    name: String,
+                    mac: String,
+                    type: String
+                }, ...
+                ]
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String
+            }
+
+    <h4>/devices/get</h4>                        // Return all the devices registered in database
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: Array
+            }
+
+    <h4>/devices/get/:id</h4>                    // Return a device with the specifid id
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: Object
+            }
+
+    <h4>/devices/get-by-gateway/:mac</h4>       // Return a list of devices linked to a specific gateway
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: Array
+            }
+
+    <h4>/devices/get-by-patient/:id </h4>       // Return a list of devices linked to a specific patient
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: Array
+            }
+    <h4>/devices/get-by-doctor-gateway/:id/:mac</h4>
+        Method: GET
+        Response: {
+            success: Boolean,
+            message: String,
+            data: Array
+        }
+    <h4>/devices/update/:mac/:gatewayMac</h4>                 // Update a device with specific ID - edit linked patient
+        Method: PUT
+        Data:
+            {
+                patientId: String
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String
+            }
+
+    <h4>/devices/delete/:id</h4>                // Delete a device with a specific ID
+        Method: DELETE
+        Response:
+            {
+                success: Boolean,
+                message: String
+            }
+</pre>
+                </div>
+                <div class="row Journals">
+                    <pre>
+    <h1>Journals</h1>
+    <h4>/journals/add</h4>                       // Add Journals
+        Method: POST
+        Data:
+        {
+            timeImported: Date,
+            timeSampled: Date,
+            type: String,
+            value: String,
+            confidence: Number,
+            source: String,
+            code: Number,
+            patientId: String
+        }
+</pre>
+                </div>
+                <div class="row Datasets">
+                    <pre>
+    <h1>Datasets</h1>
+    <h4>/phr/datasets/add</h4>                       // Add Dataset
+        Method: POST
+        Data:
+            {
+                datetime: Date                             // Timestamp for the stream starttime, should be equal to the next segments(packects)
+                type: String,                               // Type of the dataset to be added, ( ex.. ECG, ACTIVITY, SLEEP, BP, WEIGHT etc... )
+                ownerId: String,      // ID of patient for this dataset
+                ownerName: String,                         // Full name of the patient
+                value: Object                               // Key data
+            }
+            // Omron BP
+            value: {
+                SYS: Number,
+                DIA: Number
+            }
+            // Omron Weight
+            value: {
+                weight: Number
+            }
+            // ECG
+            value: {                                    // Format of value field when the dataset type is "ECG"
+                id: Number,                             // The order Id of the segments
+                ecg: Array<Number>,                     // Ecg value array
+                accelX: Array<Number>,
+                accelY: Array<Number>,
+                accelZ: Array<Number>,
+                heartRate: Array,
+                duration: Number                      // ECG Measure duration
+            }
+            // Sleep
+            value: {
+                startTime: Date,
+                duration: Number,
+                sleepDetails: [
+                    {
+                        datetime: Date,
+                        value: Number,
+                    }, ....
+                ]
+            }
+            // Activity
+            value: {
+                activity:  String,
+                starttime: Date,
+                duration:  Number,
+                point:     Number,
+                calory:    Number,
+                distance:  Number
+            }
+    <h4>/phr/datasets/get</h4>                       // Get Dataset
+        Method: POST
+        Data:                                        // Used for filter
+            {
+                datefrom: Date,
+                dateto: Date,
+                ownerIds: Array,                    // Array of users' IDs
+                datatype: String
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: Array
+            }
+    <h4>/phr/datasets/get/:datasetId</h4>                       // Get Dataset
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: Object
+            }
+    
+    <h4>/phr/datasets/get-stream</h4>               // Get ECG stream
+        Method: POST
+        Data:
+            {
+                id: String,                         // Id of dataset that contains the stream data
+                position: Number,                   // seek position
+                length: Number                      // Number of samples to buffer
+            }
+        Response:
+            {
+                success: Boolean,
+                data: {
+                    duration: Number,                   // Duration of total stream in second unit
+                    ecg: ecgData,
+                    accel: accelData,
+                    totalSample: Number                 // Number of total samples in whole stream
+                    position: Number,
+                    length: Number
+                }
+            }
+    <h4>/phr/datasets/get-hr</h4>
+        Method: POST
+        Data:
+            {
+                id: String
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: {
+                    data: Array,
+                    meta: Object
+                }
+            }
+    <h4>/phr/datasets/get-af</h4>
+        Method: POST
+        Data:
+            {
+                id: String
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: {
+                    AFs: Array
+                }
+            }
+    <h4>/phr/datasets/get-latest-data/:patientId</h4>
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: {
+                    ecg: Array,                     //  ECG data of 2 seconds
+                    weight: Number,
+                    BP:
+                    {
+                        SYS: Number,
+                        DIA: Number,
+                        HR:  Number
+                    }
+                    activity:
+                    {
+                        slow: Number,
+                        normal: Number,
+                        fast: Number
+                    }
+                }
+            }
+    <h4>/phr/datasets/comment/:id</h4>
+        Method: POST
+        Data:
+            {
+                doctorId: String
+                doctorName: String
+                doctorPhoto: String
+                content: String
+                created: Date
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+            }
+    <h4>/phr/datasets/get-comment/:id</h4>
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data[]:Array
+            }
+
+    <h4>/phr/datasets/analysis</h4>
+        Method: POST
+        Data:
+            {
+                datasetIds[]: Array,
+                module: String
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+            }
+    <h4>/phr/datasets/export-dataset</h4>
+        Method: POST
+        Data:
+            {
+                id: String,
+                type: Number
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data[]: Array                     // filename list
+            }
+    <h4>/phr/datasets/download/:filename</h4>
+        Method: GET
+        Response:
+            Download 'public/datasets/' + filename
+    <h4>/phr/datasets/download-app</h4>
+        Method: GET
+        Response:
+            Download CALM App (android)
+
+
+</pre>
+                </div>
+                <div class="row Notifications">
+                    <pre>
+    <h1>Notifications</h1>
+    <h4>/notifications/:id/pull/:filter</h4>                       // Pull notifications        id - Current account id  filter - 'new' 'all' 'af'
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: Array,                                // Array of new notifications
+            }
+    <h4>/notifications/push</h4>                       // Push notifications
+        Method: POST
+        Data:
+            {
+                sender: String,                         // Id of the account for the notification to be sent to
+                receiver: String,                       // Id of the account of receiver
+                sender_firstname: String,
+                sender_lastname: String,
+                sender_photo: String,
+                message: 'aaa',                         // Message
+                type: Number                            // Notification Type     SHARE_REQUEST: 0,   DISALLOW_SHARE: 1,   ALLOW_SHARE: 2
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: null,                                // Array of new notifications
+            }
+    <h4>/notifications/read</h4>                        //  Mark notifications read
+        Method: POST
+        Data:
+            {
+                ids: Array                              // Id Array of notifications
+                delete: Boolean                         // true if to remove, false if not
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: null
+            }
+    <h4>/notifications/get/:id</h4>
+        Method: GET
+</pre>
+                </div>
+                <div class="row Configs">
+                    <pre>
+    <h1>Configs</h1>
+    <h4>/configs/add</h4>                       // Add config
+        Method: POST
+        Data:
+            {
+                upload_freq: Number,
+                polling_freq: Number,
+                login_everytime: Boolean
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: null,
+            }
+    <h4>/configs/get/:id</h4>                       // get config
+        Method: GET
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: Object,
+            }
+
+    <h4>/configs/update/:id</h4>                       // Update config
+        Method: PUT
+        Data:
+            {
+                upload_freq: Number,
+                polling_freq: Number,
+                login_everytime: Boolean
+            }
+        Response:
+            {
+                success: Boolean,
+                message: String,
+                data: null,
+            }
+                    </pre>
+                </div>
+                <div class="row Lambda">
+                    <pre>
+    <h1>Lambda function</h1>
+    <h4>https://a4nc4fz9yj.execute-api.ap-northeast-1.amazonaws.com/prov</h4>                       // analysis ECG
+        Method: POST
+        Data:
+            {
+                ecg: Array,                    // ECG data
+                position: Number               // Position of first ECG data
+            }
+        Response:
+            {
+                AF: Array,                      // Atrial fibrillation Array
+                Hr: Array,                      // Heart Rate Array
+                position: Number,               // Position of first ECG data
+            }
+
+    <h4>Example</h4>
+
+    <textarea class="example">
+        var url = 'https://a4nc4fz9yj.execute-api.ap-northeast-1.amazonaws.com/prov';
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: JSON.stringify({
+                "ecg": [1936, 2020, 0, 0, 0, 0, 0, 1950, 1922, 1880, 1922, 1880, 1936, 1936, 2020, 1964, 1950, 1936, 1950, 1894, 1894, 1894, 1894, 1922, 1950, 1964, 1950, 1922, 1894, 1880, 1880],
+                "position": 0
+            }),
+            contentType: "application/json",
+            success: function (data) {
+                alert(JSON.stringify(data, null, 2));
+            },
+            failure: function (e) {
+                alert(e);
+            }
+        });
+    </textarea>
+    <button class="btn btn-success btn-sm" id="af-analysis">Run Example</button>
+                    </pre>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+
+
+</html>
