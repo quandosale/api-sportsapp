@@ -143,7 +143,7 @@ app.use('/notifications', notificationHanlder);
 app.use('/configs', configsHandler);
 app.use('/*', clientHanlder);
 
-var port = process.env.PORT || 3002;
+var port = process.env.PORT || 80;
 
 http.createServer(app).listen(port, function (err) {
   console.log('listening on port:' + port);
