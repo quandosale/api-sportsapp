@@ -543,6 +543,11 @@ router.get('/download-app/', (req, res) => {
     res.download(filename);
 
 });
+router.get('/download-firmware/', (req, res) => {
+    var filename = 'public/app/BMD350.zip';
+    res.download(filename);
+});
+
 
 function exportMit(res, filename) {
     var arrFileName = [];
