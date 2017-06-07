@@ -22,8 +22,15 @@ var upload = multer({
 
 // router.use(upload);
 
-router.get('/download/:filename', (req, res) => {
-    var filename = 'public/datasets/' + req.params.filename;
+router.get('/download', (req, res) => {
+    filename = '';
+    var files = fs.readdirSync(DIR);
+    files.forEach(file => {
+        filename = file;
+        console.log(filename, 'ddd');
+    });
+    var filename = DIR + '/' + filename;
+    console.log(filename, 'aa');
     res.download(filename);
 });
 
@@ -34,12 +41,12 @@ router.get('/upload', function (req, res) {
 });
 
 router.post('/upload', function (req, res) {
-    fs.readdir(DIR, (err, files) => {
-        files.forEach(file => {
-            console.log(file);
-            fs.unlinkSync(DIR + '/' + file);
-        });
-    })
+    var files = fs.readdirSync(DIR);
+    files.forEach(file => {
+        console.log(file);
+        fs.unlinkSync(DIR + '/' + file);
+    });
+
 
     upload(req, res, function (err) {
         if (err) {
