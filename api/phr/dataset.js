@@ -501,11 +501,6 @@ router.post('/addatafromfiles/', (req, res) => {
     });
 });
 
-router.get('/download/:filename', (req, res) => {
-    var filename = 'public/datasets/' + req.params.filename;
-    res.download(filename);
-});
-
 router.post('/export-dataset/', (req, res) => {
     var datasetId = req.body.id;
     var type = req.body.type;

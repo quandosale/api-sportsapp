@@ -7,5 +7,5 @@ module.exports = {
         password: '12345'
     },
     // server_url: 'http://192.168.3.4:3002/'
-    server_url: 'http://13.112.160.235/'
+    server_url: 'http://13.113.160.171/'
 }

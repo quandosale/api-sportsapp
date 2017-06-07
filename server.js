@@ -23,6 +23,7 @@ var journalHandler = require('./api/phr/journal');
 var datasetHandler = require('./api/phr/dataset');
 var notificationHanlder = require('./api/notification/notification');
 var configsHandler = require('./api/configs');
+var firmwareHandler = require('./api/firmware');
 var clientHanlder = require('./router.js');
 
 require('./model/identities');
@@ -31,12 +32,14 @@ var app = express();
 
 //View Engine
 app.set('views', path.join(__dirname, '../../client'));
+// app.set('views', path.join(__dirname, '../client-sportsapp/dist'));
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 
 // Embed File server
 app.use(express.static('public'));
 app.use(express.static(path.join(__dirname, '../../client')));
+// app.use(express.static(path.join(__dirname, '../client-sportsapp/dist')));
 
 dotenv.load();
 
@@ -141,6 +144,7 @@ app.use('/phr/journals', journalHandler);
 app.use('/phr/datasets', datasetHandler);
 app.use('/notifications', notificationHanlder);
 app.use('/configs', configsHandler);
+app.use('/firmware', firmwareHandler);
 app.use('/*', clientHanlder);
 
 var port = process.env.PORT || 80;
