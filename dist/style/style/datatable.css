@@ -1,0 +1,44 @@
+/*DataPage Table edit*/
+
+.ui-datatable thead th,
+.ui-datatable tfoot td,
+.ui-datatable tbody td {
+    border-color: inherit;
+    box-sizing: border-box;
+    padding: 8px;
+}
+
+.ui-datatable th.ui-state-default {
+    background: #494D51;
+    border-color: #494D51;
+}
+
+.ui-datatable th.ui-state-active {
+    background: #494D51;
+    color: #fff;
+    outline: 0px;
+}
+
+.ui-widget-header {
+    border: 1px solid #494D51;
+    color: #1f2836;
+    background: linear-gradient(to bottom, #494D51 0%, #494D51 100%);
+}
+
+.graph .ui-state-highlight,
+.graph .ui-widget-content .ui-state-highlight,
+.graph .ui-widget-header .ui-state-highlight {
+    border: 1px solid #B8E5FB;
+    background: #B8E5FB;
+    color: #1f2836;
+}
+
+.graph .ui-state-hover,
+.graph .ui-widget-content .ui-state-hover {
+    border: 1px solid #F3FFDA;
+    background: #F3FFDA;
+}
+
+.ui-widget-content {
+    border: 1px solid #099DED;
+}
