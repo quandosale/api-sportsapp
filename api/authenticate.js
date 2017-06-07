@@ -103,7 +103,7 @@ module.exports = function (passport) {
             req.body.birthday = new Date();
         var newUser = accountModel({
             username: req.body.username,
-            password: req.body.password,
+            password: createHash(req.body.password),
             firstname: req.body.firstname,
             secondname: req.body.lastname,
             sec_question: req.body.sec_question,
