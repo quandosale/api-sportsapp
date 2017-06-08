@@ -115,7 +115,7 @@ module.exports = function (passport) {
             weight: req.body.weight,
             weight_unit: weight_unit,
             type: '',
-            photo: '/assets/gravatar/default.jpg',
+            photo: '',
             config: null,
             patients: [],
             gateways: [],
