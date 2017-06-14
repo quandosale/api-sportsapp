@@ -99,9 +99,11 @@ module.exports = function (passport) {
         console.log(req.body);
         console.log('height unit');
         console.log(height_unit, weight_unit);
+        if (req.body.birthday == undefined)
+            req.body.birthday = new Date();
         var newUser = accountModel({
             username: req.body.username,
-            password: req.body.password,
+            password: createHash(req.body.password),
             firstname: req.body.firstname,
             secondname: req.body.lastname,
             sec_question: req.body.sec_question,
@@ -113,7 +115,7 @@ module.exports = function (passport) {
             weight: req.body.weight,
             weight_unit: weight_unit,
             type: '',
-            photo: '/assets/gravatar/default.jpg',
+            photo: '',
             config: null,
             patients: [],
             gateways: [],
@@ -123,51 +125,20 @@ module.exports = function (passport) {
             level: 0,
             size_of_storage: 0
         });
-        nev.createTempUser(newUser, function (err, existingPersistentUser, newTempUser) {
-            // some sort of error
-            if (err) {
-                errorHandler(res, err, "Unexpected error while creating temp user");
-                return;
-            }
-
-            // user already exists in persistent collection...
-            if (existingPersistentUser) {
-                console.log("Account already exists", existingPersistentUser);
+        // user already exists in persistent collection...
+        accountModel.find({
+            username: req.body.username
+        }, (err, accounts) => {
+            console.log(accounts.length);
+            if (accounts.length == 0) {
+                newUser.save((err, newuser) => {
+                    Util.responseHandler(res, true, "new user", newuser);
+                });
+            } else {
                 Util.responseHandler(res, false, "Account already exists", null);
                 return;
             }
-
-            // a new user
-            if (newTempUser) {
-                var URL = newTempUser[nev.options.URLFieldName];
-                nev.sendVerificationEmail(req.body.username, URL, function (err, info) {
-                    if (err) {
-                        errorHandler(res, err, "Unexpected Error while sending verification email");
-                        return;
-                    } else {
-                        console.log("Verification email sent");
-                        Util.responseHandler(res, true, "Verification email has sent to your email address. Please check out your email inbox.", null);
-                        return;
-                    }
-                });
-
-                // user already exists in temporary collection...
-            } else {
-                console.log('Resending verification email');
-                nev.resendVerificationEmail(req.body.username, function (err, success) {
-                    console.log('resendVerificationEmail', URL, err, success);
-                    if (err) {
-                        errorHandler(res, err, "Unexpected Error while resending verification email");
-                        return;
-                    } else {
-                        console.log("Verification email resent");
-                        Util.responseHandler(res, true, "Verification email has resent to your email address. Please check out your email inbox.", null);
-                        return;
-                    }
-                });
-                return;
-            }
-        });
+        })
     });
     // user accesses the link that is sent
     router.get('/email-verification/:URL', function (req, res) {

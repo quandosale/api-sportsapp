@@ -34,45 +34,36 @@ router.post('/add', (req, res) => {
     var ownerName = req.body.ownerName;
     var data;
     console.log(type);
-    if (type == 'ECG')
-        bNew = req.body.value.id == 1 ? true : false;
-    if (type == "ECG") {
-        accountModel.findOne({
-            _id: mongoose.Types.ObjectId(ownerId)
-        }, (err, doc) => {
-            if (err || !doc) {
-                UTIL.responseHandler(res, false, "Error1", null);
-                return;
-            } else {
-                var nLevel = doc.level > 0 ? doc.level : 0;
-                var storage = doc.size_of_storage > 0 ? doc.size_of_storage : 0;
 
-                // if limmitted
-                if (storage >= LevelConfig.value[nLevel].sizeOfStorage) {
-                    console.log("Storage limmited", storage, LevelConfig.value[nLevel].sizeOfStorage);
-                    UTIL.responseHandler(res, false, "Error Storage limmited", null);
-                    NotifiUtil.pushNotification('58882b928d28071628049126', ownerId, 4, 'Storage limmited', '', '', '');
-                    return 0;
-                }
-                var filename = `public/datasets/${ownerId}${new Date(datetime).getTime()}`;
-                data = {
-                    filename: filename
-                };
-                UTIL.saveEcgToFile(res, value, doc, datetime, duration, !bNew);
-                insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data);
+    bNew = req.body.value.id == 1 ? true : false;
 
-                console.log("ECG Upload", 'Saved ECG data to storage successfully');
+    accountModel.findOne({
+        _id: mongoose.Types.ObjectId(ownerId)
+    }, (err, doc) => {
+        if (err || !doc) {
+            UTIL.responseHandler(res, false, "Error1", null);
+            return;
+        } else {
+            var nLevel = doc.level > 0 ? doc.level : 0;
+            var storage = doc.size_of_storage > 0 ? doc.size_of_storage : 0;
+
+            // if limmitted
+            if (storage >= LevelConfig.value[nLevel].sizeOfStorage) {
+                console.log("Storage limmited", storage, LevelConfig.value[nLevel].sizeOfStorage);
+                UTIL.responseHandler(res, false, "Error Storage limmited", null);
+                NotifiUtil.pushNotification('58882b928d28071628049126', ownerId, 4, 'Storage limmited', '', '', '');
+                return 0;
             }
-        });
+            var filename = `public/datasets/${ownerId}${new Date(datetime).getTime()}`;
+            data = {
+                filename: filename
+            };
+            UTIL.saveEcgToFile(res, value, doc, datetime, duration, !bNew);
+            insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data);
 
-    } else if (type == "SLEEP") {
-        data = {
-            sleep: value
+            console.log("ECG Upload", 'Saved ECG data to storage successfully');
         }
-    }
-    if (type != "ECG") {
-        insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data);
-    }
+    });
 });
 
 function insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data) {
@@ -219,13 +210,13 @@ router.get('/get/:id', (req, res) => {
 })
 router.post('/get', (req, res) => {
     // var reqq = JSON.parse(req.body);
-    console.log('Dataset Request:', req.body, typeof req.body);
+    console.log('Dataset Request:   ', req.body);
     // req.body = reqq;
     var datefrom = new Date(req.body.datefrom);
     var dateto = new Date(req.body.dateto);
     var owners = req.body.ownerIds.map((x) => mongoose.Types.ObjectId(x));
-    var datatype = req.body.datatype;
-
+    var datatype = "" + req.body.datatype; // convert to string
+    datatype = datatype.toLocaleLowerCase();
     var filter = {
         ownerId: {
             $in: owners
@@ -238,7 +229,7 @@ router.post('/get', (req, res) => {
     }
 
     if (req.body.datefrom == "" || req.body.dateto == "") delete filter.datetime;
-    if (datatype == "" || datatype == "ALL") delete filter.type;
+    if (datatype == "" || datatype == "all") delete filter.type;
 
     datasetModel.find(filter, (err, docs) => {
         if (err) res.send({
@@ -499,11 +490,6 @@ router.post('/addatafromfiles/', (req, res) => {
         if (err) return next(err);
         // res.redirect('/');
     });
-});
-
-router.get('/download/:filename', (req, res) => {
-    var filename = 'public/datasets/' + req.params.filename;
-    res.download(filename);
 });
 
 router.post('/export-dataset/', (req, res) => {
