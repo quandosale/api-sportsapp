@@ -628,16 +628,7 @@
                 ownerName: String,                         // Full name of the patient
                 value: Object                               // Key data
             }
-            // Omron BP
-            value: {
-                SYS: Number,
-                DIA: Number
-            }
-            // Omron Weight
-            value: {
-                weight: Number
-            }
-            // ECG
+            // 'exercise' || 'sleep'
             value: {                                    // Format of value field when the dataset type is "ECG"
                 id: Number,                             // The order Id of the segments
                 ecg: Array<Number>,                     // Ecg value array
@@ -648,25 +639,8 @@
                 duration: Number                      // ECG Measure duration
             }
             // Sleep
-            value: {
-                startTime: Date,
-                duration: Number,
-                sleepDetails: [
-                    {
-                        datetime: Date,
-                        value: Number,
-                    }, ....
-                ]
-            }
-            // Activity
-            value: {
-                activity:  String,
-                starttime: Date,
-                duration:  Number,
-                point:     Number,
-                calory:    Number,
-                distance:  Number
-            }
+            ...
+
     <h4>/phr/datasets/get</h4>                       // Get Dataset
         Method: POST
         Data:                                        // Used for filter

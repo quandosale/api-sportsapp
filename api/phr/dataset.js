@@ -34,45 +34,36 @@ router.post('/add', (req, res) => {
     var ownerName = req.body.ownerName;
     var data;
     console.log(type);
-    if (type == 'ECG')
-        bNew = req.body.value.id == 1 ? true : false;
-    if (type == "ECG") {
-        accountModel.findOne({
-            _id: mongoose.Types.ObjectId(ownerId)
-        }, (err, doc) => {
-            if (err || !doc) {
-                UTIL.responseHandler(res, false, "Error1", null);
-                return;
-            } else {
-                var nLevel = doc.level > 0 ? doc.level : 0;
-                var storage = doc.size_of_storage > 0 ? doc.size_of_storage : 0;
 
-                // if limmitted
-                if (storage >= LevelConfig.value[nLevel].sizeOfStorage) {
-                    console.log("Storage limmited", storage, LevelConfig.value[nLevel].sizeOfStorage);
-                    UTIL.responseHandler(res, false, "Error Storage limmited", null);
-                    NotifiUtil.pushNotification('58882b928d28071628049126', ownerId, 4, 'Storage limmited', '', '', '');
-                    return 0;
-                }
-                var filename = `public/datasets/${ownerId}${new Date(datetime).getTime()}`;
-                data = {
-                    filename: filename
-                };
-                UTIL.saveEcgToFile(res, value, doc, datetime, duration, !bNew);
-                insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data);
+    bNew = req.body.value.id == 1 ? true : false;
 
-                console.log("ECG Upload", 'Saved ECG data to storage successfully');
+    accountModel.findOne({
+        _id: mongoose.Types.ObjectId(ownerId)
+    }, (err, doc) => {
+        if (err || !doc) {
+            UTIL.responseHandler(res, false, "Error1", null);
+            return;
+        } else {
+            var nLevel = doc.level > 0 ? doc.level : 0;
+            var storage = doc.size_of_storage > 0 ? doc.size_of_storage : 0;
+
+            // if limmitted
+            if (storage >= LevelConfig.value[nLevel].sizeOfStorage) {
+                console.log("Storage limmited", storage, LevelConfig.value[nLevel].sizeOfStorage);
+                UTIL.responseHandler(res, false, "Error Storage limmited", null);
+                NotifiUtil.pushNotification('58882b928d28071628049126', ownerId, 4, 'Storage limmited', '', '', '');
+                return 0;
             }
-        });
+            var filename = `public/datasets/${ownerId}${new Date(datetime).getTime()}`;
+            data = {
+                filename: filename
+            };
+            UTIL.saveEcgToFile(res, value, doc, datetime, duration, !bNew);
+            insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data);
 
-    } else if (type == "SLEEP") {
-        data = {
-            sleep: value
+            console.log("ECG Upload", 'Saved ECG data to storage successfully');
         }
-    }
-    if (type != "ECG") {
-        insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data);
-    }
+    });
 });
 
 function insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data) {
