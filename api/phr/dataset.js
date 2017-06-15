@@ -18,6 +18,7 @@ var ObjectId = mongoose.Types.ObjectId;
 var UTIL = require('../../lib/util');
 var async = require('async');
 var fs = require('graceful-fs');
+const fsextra = require('fs-extra')
 var LevelConfig = require('../../model/identities').LevelConfig;
 
 var NotifiUtil = require('../notification/noti-util');
@@ -249,6 +250,100 @@ router.post('/get', (req, res) => {
         }
     });
 })
+router.delete('/delete/:id', (req, res) => {
+    console.log('Dataset Delete Request:   ', req.params.id);
+    datasetModel.findOne({
+        _id: ObjectId(req.params.id)
+    }, (err, doc) => {
+        if (err || !doc) {
+            console.log('err', err);
+            UTIL.responseHandler(res, false, "can not find dataset from MongoDB", null);
+        } else if (doc) {
+            var filename = doc.data.filename;
+            deleteDatasetFile(req, res, filename);
+        }
+    });
+})
+
+function deleteDatasetFile(req, res, _filename) {
+    // let ecg = _filename + '_ecg.dat';
+    // let acc = _filename + '_accel.dat';
+    console.log('will remove: ' + _filename);
+    const datasetsFolder = 'public/datasets/';
+
+    async.waterfall([
+        function (done) {
+            fs.readdir(datasetsFolder, (err, arrfileName) => {
+                console.log('result before', arrfileName.length);
+                arrfileName = arrfileName.filter((itemFileName, index) => {
+                    var filePath = datasetsFolder + itemFileName;
+                    return filePath.indexOf(_filename) !== -1;
+                });
+                var arrDeletefileName = [];
+                arrfileName.map(item => {
+                    console.log(item);
+                    arrDeletefileName.push(datasetsFolder + item);
+                });
+
+                console.log('result after', arrfileName.length);
+                arrDeletefileName.map(item => {
+                    console.log(item);
+                });
+                done(null, arrDeletefileName);
+            });
+        },
+        function (_arrFilename, callback) {
+            console.log('function1');
+            async.eachSeries(_arrFilename, function iterator(item, callback) {
+                fsextra.remove(item, err => {
+                    if (err) {
+                        callback("error");
+                    }
+                    console.log('success delete: ', item);
+                    callback(null);
+                });
+            }, function done() {
+                //...
+                console.log('done');
+                callback(null, 'success');
+            });
+        },
+        function (done) {
+            console.log('function2');
+            removeDatasetFromDB(req, res);
+        }
+    ], function (err) {
+        if (err) {
+            res.send({
+                success: false,
+                message: 'Error while delete file'
+            });
+        }
+
+    });
+}
+
+function removeDatasetFromDB(req, res) {
+
+    datasetModel.remove({
+        _id: mongoose.Types.ObjectId(req.params.id)
+    }, (err) => {
+        console.log(req.params.id);
+        if (err) {
+            console.log('err', err);
+            res.send({
+                success: false,
+                message: 'Error while delete dataset'
+            });
+        } else {
+            console.log('success');
+            res.send({
+                success: true,
+                message: 'Successfully delete the dataset'
+            });
+        }
+    });
+}
 router.post('/get-stream', (req, res) => {
     var id = req.body.id;
     var position = req.body.position;
