@@ -188,8 +188,8 @@ module.exports = function (passport) {
                 console.log(req.body);
                 accountModel.findOne({
                     username: req.body.username,
-                    sec_question: req.body.sec_question,
-                    sec_answer: req.body.sec_answer
+                    // sec_question: req.body.sec_question,
+                    // sec_answer: req.body.sec_answer
                 }, function (err, user) {
                     if (!user) {
                         Util.responseHandler(res, false, "No account with that email address exists or invalid answer", null);
@@ -208,13 +208,12 @@ module.exports = function (passport) {
                 var smtpTransport = nodemailer.createTransport({
                     host: 'smtp.gmail.com',
                     port: 465,
-                    secure: true, // use SSL
+                    secure: false, // use SSL
                     auth: {
                         user: 'wbitsale@gmail.com',
-                        pass: 'wbit2017'
+                        pass: 'wkfurwkrkd'
                     }
                 });
-
                 var mailOptions = {
                     from: 'CALM <wbitsale@gmail.com>',
                     to: user.username,
@@ -224,6 +223,7 @@ module.exports = function (passport) {
                         token: token
                     })
                 };
+                console.log(mailOptions);
                 smtpTransport.sendMail(mailOptions, function (err, info) {
                     // console.log('sendMail', err, info);
                     if (!err)
