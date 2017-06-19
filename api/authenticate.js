@@ -208,7 +208,7 @@ module.exports = function (passport) {
                 var smtpTransport = nodemailer.createTransport({
                     host: 'smtp.gmail.com',
                     port: 465,
-                    secure: false, // use SSL
+                    secure: true, // use SSL
                     auth: {
                         user: 'wbitsale@gmail.com',
                         pass: 'wkfurwkrkd'
