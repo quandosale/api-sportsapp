@@ -24,6 +24,7 @@ var LevelConfig = require('../../model/identities').LevelConfig;
 var NotifiUtil = require('../notification/noti-util');
 var aws = require('aws-sdk');
 var LambdaFunction = require('../../Lambda function/arrhythmia');
+
 router.post('/add', (req, res) => {
     // console.log(req.body);
     var value = req.body.value;
@@ -34,7 +35,6 @@ router.post('/add', (req, res) => {
     var type = req.body.type;
     var ownerName = req.body.ownerName;
     var data;
-    console.log(type);
 
     bNew = req.body.value.id == 1 ? true : false;
 
@@ -60,20 +60,33 @@ router.post('/add', (req, res) => {
                 filename: filename
             };
             UTIL.saveEcgToFile(res, value, doc, datetime, duration, !bNew);
-            insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data);
+            insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data, duration);
 
             console.log("ECG Upload", 'Saved ECG data to storage successfully');
         }
     });
 });
 
-function insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data) {
+router.post('/update-duration', (req, res) => {
+    var datetime = req.body.datetime;
+    var duration = req.body.duration;
+    var userId = req.body.ownerId;
+    console.log('update duration', req.body);
+    datasetModel.update({
+        datetime: datetime,
+        ownerId: mongoose.Types.ObjectId(userId),
+        type: type}, {duration: duration});
+    UTIL.responseHandler(res, true);
+})
+
+function insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data, duration) {
     console.log('Dataset uploading...', datetime);
     datasetModel.findOne({
         datetime: datetime,
         ownerId: mongoose.Types.ObjectId(ownerId),
         type: type
     }, (err, dataset) => {
+        console.log(dataset);
         if (dataset) bNew = false;
         if (bNew) {
             console.log("Writing new dataset into database...", data);
@@ -82,7 +95,8 @@ function insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data) {
                 type: type,
                 ownerId: mongoose.Types.ObjectId(ownerId),
                 ownerName: ownerName,
-                data: data
+                data: data,
+                duration: duration
             });
             datasetDoc.save((err, doc, num) => {
                 if (err) res.send({
@@ -108,6 +122,13 @@ function insertDataSets(res, bNew, datetime, ownerId, ownerName, type, data) {
                 }
             })
         } else {
+            datasetModel.update({
+                datetime: datetime,
+                ownerId: mongoose.Types.ObjectId(ownerId),
+                type: type
+            }, {duration: duration + dataset.duration}, (err, raw) => {
+                console.log('dataset duration', dataset.duration + duration);
+            })
             UTIL.responseHandler(res, true, 'Success', null);
         }
     });
@@ -353,7 +374,6 @@ router.post('/get-stream', (req, res) => {
         if (err) UTIL.responseHandler(res, false, 'Error', null);
         else {
             if (doc) {
-                console.log('doc', doc);
                 if (doc.data) {
                     var filename = doc.data.filename;
                     var ownerId = doc.ownerId;
@@ -366,7 +386,6 @@ router.post('/get-stream', (req, res) => {
                             var patient = doc;
                             UTIL.readECG16(res, filename, position, length, patient);
                         }
-
                     });
 
                 }
